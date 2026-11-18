@@ -47,46 +47,70 @@ The system must provide explanations and traceable evidence rather than opaque m
 
 ## 2. Proposed Solution
 
-MedSafe AI separates **deterministic clinical safety logic** from the **LLM explanation layer**.
+MedSafe AI implements a layered architecture that cleanly separates **deterministic clinical safety logic** from the **Biomedical NLP** and **LLM explanation layer**:
 
-The core workflow is:
+### Layer 1 — Deterministic Safety Engine (Core)
+- **Drug-drug interaction checks:** Detects potentially unsafe pharmacokinetic or pharmacodynamic medicine combinations.
+- **Drug-disease contraindication checks:** Evaluates condition-specific contraindications against active clinical diagnoses (renal impairment, hepatic impairment, pregnancy, asthma, G6PD deficiency, and hyperkalemia risk).
+- **Duplicate or redundant therapy checks:** Detects overlapping active ingredients and therapeutic class redundancies causing overdosage.
+- **Known allergy-conflict checks:** Detects direct hypersensitivity allergies and shared epitope cross-reactivities (e.g., penicillin and amoxicillin).
+- **Severity-based alert classification:** Assigns standardized severity classifications (`INFO`, `LOW`, `MODERATE`, `HIGH`, `CONTRAINDICATED`) using documented rules and available evidence.
+
+### Layer 2 — Biomedical NLP
+- For typed or semi-structured prescription text, a biomedical NLP pipeline extracts medicine names, dosage, frequency, route, and duration where available.
+- The extracted information is normalized against the canonical medication catalogue and passed seamlessly to the deterministic safety engine.
+
+### Layer 3 — Evidence-Grounded RAG Assistant (Stretch Goal)
+- For a detected risk, the optional RAG (Retrieval-Augmented Generation) layer retrieves relevant evidence from verified medication-information sources (such as openFDA drug labeling) and generates a plain-language clinical explanation with supporting references.
+- **Strict Clinical Boundary:** The LLM explains a detected risk; it does not independently determine whether a medication is safe.
+
+### Supporting Infrastructure
+- **Secure Authentication & RBAC:** Role-Based Access Control configured for doctors, pharmacists, and administrators.
+- **Patient Medication History:** Comprehensive longitudinal timelines of active prescriptions and past therapies.
+- **Alert Acknowledgement / Override:** Support for professional clinician overrides accompanied by mandatory clinical justifications.
+- **Audit Logging:** Every review generates an auditable trace capturing the `ruleset_version`, `catalogue_version`, and unique `X-Request-ID`.
+
+The end-to-end workflow is:
 
 ```text
-Patient + Medicines
+Prescription (Catalogue Search OR Free-Text Note)
+        │
+        ├──────────────────────┐
+        ▼                      ▼
+Structured Meds        Biomedical NLP Pipeline (Layer 2)
+        │              (Entity extraction: Drug, Dose, Sig, Route)
+        │                      │
+        ▼                      ▼
+  Drug Resolution & Normalization (Catalogue Verification)
         │
         ▼
-Patient Context Retrieval
+  Patient Context Retrieval (Demographics, Conditions, Allergies, Organ Status)
         │
         ▼
-Drug Name Resolution
-        │
-        ▼
-Deterministic Safety Rules
+  Layer 1: Deterministic Safety Engine (Core)
         │
         ├── Drug-drug interactions
         ├── Allergies / cross-reactivity
-        ├── Pregnancy
+        ├── Pregnancy contraindications
         ├── Renal contraindications
         ├── Hepatic contraindications
         ├── Hyperkalemia risk
         ├── G6PD contraindications
-        ├── Respiratory contraindications
-        ├── Age-based caution
+        ├── Respiratory / Asthma contraindications
+        ├── Age-based caution (Beers criteria)
         └── Duplicate therapy
         │
         ▼
-Structured Safety Findings
-        │
-        ├──────────────► Optional Evidence Retrieval
+  Structured Safety Findings (Severity, Mechanism, Rule ID)
         │
         ▼
-Optional LLM Explanation
+  Layer 3: Evidence-Grounded RAG Assistant (Stretch Goal)
+        │
+        ├── OpenFDA Evidence Retrieval
+        └── Plain-Language Pharmacist Explanation (LLM)
         │
         ▼
-Screening Response
-        │
-        ▼
-Pharmacist Review
+  Auditable Alert Presentation & Pharmacist Final Review
 ```
 
 The deterministic layer remains the source of truth. The LLM summarizes structured findings and must not introduce new clinical facts, change severity, or create additional interactions.

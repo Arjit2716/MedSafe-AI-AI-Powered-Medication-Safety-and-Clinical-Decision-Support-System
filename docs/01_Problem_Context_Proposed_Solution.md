@@ -29,9 +29,31 @@ Pharmacists perform functions that require continuous review of patient medicati
 - System context: a hospital or pharmacy environment with access to patient history and medication/inventory data.
 - Hackathon context: patient records and inventory are mocked; the PPB public registered-product catalogue is used as the external Kenya-specific drug catalogue.
 
-# 5. Proposed Solution — OmniPharma Agent
+# 5. Proposed Solution — MedSafe AI Architecture
 
-OmniPharma combines deterministic clinical-safety rules, a drug catalogue, patient-context retrieval, an interaction knowledge source, and an LLM-based orchestration layer. The LLM is used for intent interpretation, evidence synthesis and explanation; safety-critical checks are performed by deterministic services wherever possible.
+MedSafe AI implements a three-layer Clinical Decision Support (CDSS) architecture:
+
+### Layer 1 — Deterministic Safety Engine (Core)
+- **Drug-drug interaction checks:** Detects potentially unsafe pharmacokinetic or pharmacodynamic interactions between concurrent medicines.
+- **Drug-disease contraindication checks:** Checks active patient medical conditions (renal impairment, hepatic impairment, pregnancy, asthma, G6PD deficiency, hyperkalemia risk).
+- **Duplicate or redundant therapy checks:** Detects overlapping active ingredients or therapeutic class redundancies causing toxic overdosage.
+- **Known allergy-conflict checks:** Checks direct hypersensitivity allergens and structural cross-reactivity classes (e.g. beta-lactams).
+- **Severity-based alert classification:** Applies documented deterministic rules and available evidence to assign unambiguous severity levels (`INFO`, `LOW`, `MODERATE`, `HIGH`, `CONTRAINDICATED`).
+
+### Layer 2 — Biomedical NLP
+- For typed or semi-structured prescription text, a biomedical NLP pipeline extracts medicine names, dosage, frequency, route, and duration where available.
+- The extracted information is normalized against the verified drug catalogue and passed directly into the safety engine.
+
+### Layer 3 — Evidence-Grounded RAG Assistant (Stretch Goal)
+- For a detected risk, the optional Retrieval-Augmented Generation (RAG) layer retrieves relevant evidence from verified medication-information sources (e.g. openFDA drug labels) and generates a plain-language explanation with supporting references.
+- **Strict Clinical Boundary:** The LLM explains a detected risk; it does not independently determine whether a medication is safe.
+
+### Supporting Infrastructure
+Supporting infrastructure includes:
+- Secure authentication and role-based access control (RBAC) for doctors, pharmacists, and administrators.
+- Comprehensive patient medication history tracking and current active prescriptions.
+- Alert acknowledgement / override workflows with mandatory clinical justification.
+- Tamper-evident audit logging with ruleset and catalogue snapshot versioning (`ruleset_version`, `catalogue_version`, `X-Request-ID`).
 
 # 6. Core Workflow
 

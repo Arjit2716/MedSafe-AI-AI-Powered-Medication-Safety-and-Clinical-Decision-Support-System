@@ -21,6 +21,11 @@ import {
   BookOpen,
   FileText,
   Stethoscope,
+  Layers,
+  Cpu,
+  Database,
+  Key,
+  CheckCircle2,
 } from "lucide-react";
 
 export interface DashboardPageProps {
@@ -281,6 +286,132 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               <ShieldCheck size={14} className="text-teal-600 shrink-0" />
               <span>MedSafe AI provides a software-based safety layer that analyzes patient and prescription context to flag potential risks before finalization.</span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3-Layer Proposed Solution Architecture Section */}
+      <section className="mb-6 bg-slate-900 text-white rounded-xl p-5 border border-slate-800 shadow-sm" aria-label="3-Layer Proposed Solution Architecture">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-teal-500/20 text-teal-400 rounded-lg">
+              <Layers size={18} aria-hidden="true" />
+            </div>
+            <div>
+              <h3 className="font-bold text-white text-base">Proposed Solution Architecture</h3>
+              <p className="text-xs text-slate-400">Three-tier clinical safety pipeline with deterministic core and AI assistance</p>
+            </div>
+          </div>
+          <span className="text-[11px] font-semibold px-2.5 py-1 rounded bg-teal-900/60 text-teal-300 border border-teal-700/50">
+            System Design Specification
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Layer 1 */}
+          <div className="bg-slate-800/80 rounded-lg p-4 border border-slate-700 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-teal-400 font-mono">Layer 1</span>
+                <span className="text-[10px] font-semibold bg-teal-500/20 text-teal-300 px-2 py-0.5 rounded">Core Engine</span>
+              </div>
+              <h4 className="font-bold text-sm text-slate-100 mb-2.5 flex items-center gap-1.5">
+                <Cpu size={15} className="text-teal-400" />
+                <span>Deterministic Safety Engine</span>
+              </h4>
+              <ul className="text-xs text-slate-300 space-y-1.5">
+                <li className="flex items-start gap-1.5">
+                  <span className="text-teal-400 mt-0.5">•</span>
+                  <span><strong>Drug-drug interaction checks:</strong> Pharmacokinetic & pharmacodynamic antagonism.</span>
+                </li>
+                <li className="flex items-start gap-1.5">
+                  <span className="text-teal-400 mt-0.5">•</span>
+                  <span><strong>Drug-disease contraindications:</strong> Organ impairments, pregnancy, asthma, G6PD.</span>
+                </li>
+                <li className="flex items-start gap-1.5">
+                  <span className="text-teal-400 mt-0.5">•</span>
+                  <span><strong>Duplicate / redundant therapy:</strong> Therapeutic redundancies & overdosage hazards.</span>
+                </li>
+                <li className="flex items-start gap-1.5">
+                  <span className="text-teal-400 mt-0.5">•</span>
+                  <span><strong>Known allergy-conflict checks:</strong> Direct hypersensitivity & cross-reactive classes.</span>
+                </li>
+                <li className="flex items-start gap-1.5">
+                  <span className="text-teal-400 mt-0.5">•</span>
+                  <span><strong>Severity-based classification:</strong> Standardized rules (INFO to CONTRAINDICATED).</span>
+                </li>
+              </ul>
+            </div>
+            <div className="mt-3 pt-2 border-t border-slate-700/60 text-[11px] text-teal-300/80 font-mono">
+              Pure deterministic functions • No hallucinations
+            </div>
+          </div>
+
+          {/* Layer 2 */}
+          <div className="bg-slate-800/80 rounded-lg p-4 border border-slate-700 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-400 font-mono">Layer 2</span>
+                <span className="text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded">Entity Extraction</span>
+              </div>
+              <h4 className="font-bold text-sm text-slate-100 mb-2.5 flex items-center gap-1.5">
+                <Stethoscope size={15} className="text-indigo-400" />
+                <span>Biomedical NLP Pipeline</span>
+              </h4>
+              <p className="text-xs text-slate-300 leading-relaxed mb-3">
+                For typed or semi-structured prescription text, a dedicated biomedical NLP pipeline extracts:
+              </p>
+              <div className="grid grid-cols-2 gap-1.5 text-xs mb-3">
+                <span className="bg-slate-900/60 px-2 py-1 rounded text-indigo-200 border border-slate-700/60">Medicine Names</span>
+                <span className="bg-slate-900/60 px-2 py-1 rounded text-indigo-200 border border-slate-700/60">Dosage Quantities</span>
+                <span className="bg-slate-900/60 px-2 py-1 rounded text-indigo-200 border border-slate-700/60">Sig / Frequency</span>
+                <span className="bg-slate-900/60 px-2 py-1 rounded text-indigo-200 border border-slate-700/60">Administration Route</span>
+                <span className="bg-slate-900/60 px-2 py-1 rounded text-indigo-200 border border-slate-700/60 col-span-2">Course Duration</span>
+              </div>
+              <p className="text-xs text-slate-300">
+                Extracted information is normalized against the verified catalogue and passed seamlessly to the safety engine.
+              </p>
+            </div>
+            <div className="mt-3 pt-2 border-t border-slate-700/60 text-[11px] text-indigo-300/80 font-mono">
+              Live text parsing • Catalogue normalization
+            </div>
+          </div>
+
+          {/* Layer 3 */}
+          <div className="bg-slate-800/80 rounded-lg p-4 border border-slate-700 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400 font-mono">Layer 3</span>
+                <span className="text-[10px] font-semibold bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded">Stretch Goal</span>
+              </div>
+              <h4 className="font-bold text-sm text-slate-100 mb-2.5 flex items-center gap-1.5">
+                <Sparkles size={15} className="text-amber-400" />
+                <span>Evidence-Grounded RAG Assistant</span>
+              </h4>
+              <p className="text-xs text-slate-300 leading-relaxed mb-3">
+                For a detected risk, the optional RAG layer retrieves relevant evidence from verified medication-information sources (openFDA drug labeling) and generates a plain-language explanation with supporting references.
+              </p>
+              <div className="p-2.5 rounded bg-amber-950/40 border border-amber-800/40 text-xs text-amber-200/90 leading-relaxed">
+                <strong>Strict Boundary:</strong> The LLM explains a detected risk; it does not independently determine whether a medication is safe.
+              </div>
+            </div>
+            <div className="mt-3 pt-2 border-t border-slate-700/60 text-[11px] text-amber-300/80 font-mono">
+              openFDA RAG • Traceable references
+            </div>
+          </div>
+        </div>
+
+        {/* Supporting Infrastructure Bar */}
+        <div className="mt-4 pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
+          <span className="font-semibold text-slate-300 flex items-center gap-1">
+            <Key size={13} className="text-teal-400" />
+            <span>Supporting Infrastructure:</span>
+          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="bg-slate-800 px-2 py-0.5 rounded border border-slate-700 text-slate-300">Secure Auth & RBAC (Doctor/Pharmacist/Admin)</span>
+            <span className="bg-slate-800 px-2 py-0.5 rounded border border-slate-700 text-slate-300">Patient Medication History</span>
+            <span className="bg-slate-800 px-2 py-0.5 rounded border border-slate-700 text-slate-300">Alert Override with Justification</span>
+            <span className="bg-slate-800 px-2 py-0.5 rounded border border-slate-700 text-slate-300">Immutable Audit Logging</span>
           </div>
         </div>
       </section>
