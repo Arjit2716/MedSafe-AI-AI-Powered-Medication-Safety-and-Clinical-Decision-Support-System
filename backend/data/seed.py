@@ -125,6 +125,8 @@ def seed() -> None:
             # New patients (spec Section 6)
             ("OMNI-011", "Peter Mutiso", "1994-05-02", "M", "NOT_APPLICABLE", "NORMAL", "NORMAL", "DEFICIENT"),
             ("OMNI-012", "Mary Wambui", "1953-03-19", "F", "NOT_PREGNANT", "NORMAL", "NORMAL", "NORMAL"),
+            # Benchmark Scenario 13 Patient (60yo, CKD, Penicillin Allergy, Meds: Lisinopril + Metformin)
+            ("OMNI-013", "David Kimani (Scenario 13 Benchmark)", "1966-06-15", "M", "NOT_APPLICABLE", "MODERATE_IMPAIRMENT", "NORMAL", "NORMAL"),
         ]
 
         patient_objects: list[Patient] = []
@@ -172,6 +174,7 @@ def seed() -> None:
             ("OMNI-010", "I48", "Atrial fibrillation", "ACTIVE", "2019-03-22"),
             ("OMNI-011", "N39", "Urinary tract infection", "ACTIVE", "2026-09-20"),
             ("OMNI-012", "I10", "Hypertension", "ACTIVE", "2015-06-01"),
+            ("OMNI-013", "N18", "Chronic kidney disease stage 3", "ACTIVE", "2018-05-12"),
         ]
         for code, icd, name, status, onset in conditions_data:
             db.add(Condition(
@@ -199,6 +202,7 @@ def seed() -> None:
             ("OMNI-010", "penicillin", "Anaphylaxis", "SEVERE"),
             ("OMNI-011", "none", "none", "NONE"),
             ("OMNI-012", "none", "none", "NONE"),
+            ("OMNI-013", "penicillin", "Severe anaphylaxis", "SEVERE"),
         ]
         for code, allergen, reaction, severity in allergies_data:
             db.add(Allergy(

@@ -154,7 +154,84 @@ React Dashboard → FastAPI REST API → Patient/Prescription/Auth Services → 
 
 ---
 
-## 5. MVP Scope
+## 5. Major Modules
+
+| Module | What it does |
+|---|---|
+| **Authentication & RBAC** | Login and role-based permissions for doctor, pharmacist and admin. |
+| **Patient Management** | Conditions, allergies, medication history and profile information. |
+| **Prescription Management** | Structured prescription entry and free-text input. |
+| **Medication Normalization** | Maps medication input to standardized representations where applicable. |
+| **Safety Engine** | Drug-drug, drug-disease, allergy and duplicate-therapy checks. |
+| **NLP** | Extracts medication information from typed prescription text. |
+| **RAG** | Retrieves supporting evidence and generates explanations. |
+| **Alert & Review** | Displays severity, evidence, acknowledgement and override workflow. |
+| **Audit** | Records important actions, decisions, justifications and timestamps. |
+
+---
+
+## 6. MVP Definition
+
+The core clinical safety lifecycle defines the minimum viable product:
+
+1. **Login:** Role-based profile access (Doctor, Pharmacist, Admin).
+2. **Patient profile:** Comprehensive dossier with active conditions, recorded allergies, organ function statuses, and current medicines.
+3. **Prescription entry:** Structured selection or typed prescription text.
+4. **Medication normalization:** Mapping aliases and brand names to verified active ingredients.
+5. **Deterministic safety engine:** 100% reproducible rule modules evaluating multi-comorbidity conflicts.
+6. **Risk detection + severity alert:** Standardized classification (`INFO`, `LOW`, `MODERATE`, `HIGH`, `CONTRAINDICATED`).
+7. **Doctor acknowledgement or override:** Mandatory clinical justification capture for alert overrides.
+8. **Audit log:** Immutable tracking of user, action, rule ID, justification, and timestamp.
+
+> **Reliability Standard:** If this workflow is complete, tested, and reliable, the project has a valid MVP. NLP and RAG are advanced layers added afterward.
+
+---
+
+## 7. Example End-to-End Scenario
+
+- **Patient:** 60 years old; chronic kidney disease (CKD stage 3); severe penicillin allergy; current medicines: Drug A (`lisinopril`) and Drug B (`metformin`). *(Represented by Benchmark Patient `OMNI-013`)*
+- **New prescription:** Drug C (`amoxicillin` or `ibuprofen`) 500 mg twice daily.
+- **System:**
+  1. Normalizes Drug C $\to$ resolves active ingredient.
+  2. Checks current medicines $\to$ evaluates potential DDI interactions with Drug A & Drug B.
+  3. Checks disease-related conflicts $\to$ flags renal contraindication against impaired kidney function.
+  4. Checks allergy conflicts $\to$ flags cross-reactivity with documented penicillin allergy.
+  5. Checks duplicate therapy $\to$ verifies therapeutic overlap.
+  6. Assigns documented severity $\to$ outputs prioritized finding cards.
+  7. Displays alert.
+- **Doctor / Pharmacist:** Reviews the alert and either acknowledges it or overrides it with a justification.
+- **Audit:** Action, user, alert rule ID, decision, justification reason, and timestamp are recorded in the audit log.
+- **Optional RAG:** Retrieves supporting evidence from openFDA and presents a plain-language explanation with source references.
+
+---
+
+## 8. Evaluation Plan
+
+| Area | Metrics / Evaluation |
+|---|---|
+| **Safety Engine** | Precision, recall, F1-score, false-positive rate and rule coverage on a controlled test set. |
+| **NLP** | Medicine extraction, dosage extraction, frequency extraction and medication normalization accuracy. |
+| **RAG** | Retrieval relevance, evidence grounding, response correctness and hallucination rate where implemented. |
+| **System** | API latency, prescription-processing time, database performance and controlled concurrent requests. |
+| **Alert Design** | Compare binary versus severity-based prioritization using controlled test scenarios; do not claim clinical effectiveness without appropriate validation. |
+
+---
+
+## 9. Important Project Rules (B.Tech CSE Major Project)
+
+> **MedSafe AI — B.Tech CSE Major Project Standards**
+
+- **• Rules detect.** The deterministic safety engine is the source of truth for safety detection.
+- **• NLP structures.** NLP extracts information; it does not decide clinical safety.
+- **• RAG explains.** The LLM explains retrieved evidence; it does not prescribe or independently determine safety.
+- **• Doctor decides.** Final clinical authority remains with the healthcare professional.
+- **• No fabricated medical information.** Every safety rule and evidence source must be traceable.
+- **• Verify data terms.** Check current source version, license, attribution and allowed use before ingestion.
+- **• MVP first.** Never delay the working safety engine for advanced AI features.
+
+---
+
+## 10. MVP Scope
 
 The MVP treats medication safety as a **multi-dimensional patient-context problem**, not merely a pregnancy checker.
 

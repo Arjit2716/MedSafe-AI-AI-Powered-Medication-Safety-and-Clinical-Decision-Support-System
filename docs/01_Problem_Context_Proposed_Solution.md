@@ -98,6 +98,63 @@ OmniPharma is designed as clinical decision support, not an autonomous prescribe
 - Each result includes a machine-readable reason/severity and human-readable explanation.
 - The PPB ingestion process can rebuild/update the local drug catalogue without changing the core agent.
 
-# 11. Source Basis
+# 11. Major Modules
+
+| Module | What it does |
+|---|---|
+| **Authentication & RBAC** | Login and role-based permissions for doctor, pharmacist and admin. |
+| **Patient Management** | Conditions, allergies, medication history and profile information. |
+| **Prescription Management** | Structured prescription entry and free-text input. |
+| **Medication Normalization** | Maps medication input to standardized representations where applicable. |
+| **Safety Engine** | Drug-drug, drug-disease, allergy and duplicate-therapy checks. |
+| **NLP** | Extracts medication information from typed prescription text. |
+| **RAG** | Retrieves supporting evidence and generates explanations. |
+| **Alert & Review** | Displays severity, evidence, acknowledgement and override workflow. |
+| **Audit** | Records important actions, decisions, justifications and timestamps. |
+
+# 12. MVP Definition
+
+The core clinical safety lifecycle defines the minimum viable product:
+1. **Login:** Role-based profile access (Doctor, Pharmacist, Admin).
+2. **Patient profile:** Conditions + allergies + current medicines.
+3. **Prescription entry:** Structured entry or typed free text.
+4. **Medication normalization:** Standardized catalogue mapping.
+5. **Deterministic safety engine:** Rule-based multi-comorbidity checks.
+6. **Risk detection + severity alert:** Documented severity outputs.
+7. **Doctor acknowledgement or override:** Mandatory clinical justification capture.
+8. **Audit log:** Action, user, alert, decision, reason and timestamp recorded.
+
+*If this workflow is complete, tested, and reliable, the project has a valid MVP. NLP and RAG are advanced layers added afterward.*
+
+# 13. Example End-to-End Scenario
+
+- **Patient:** 60 years old; kidney disease; penicillin allergy; current medicines: Drug A and Drug B. *(Demonstrated via Benchmark Patient `OMNI-013`)*
+- **New prescription:** Drug C 500 mg twice daily.
+- **System:** Normalizes Drug C $\to$ checks current medicines $\to$ checks disease-related conflicts $\to$ checks allergy conflicts $\to$ checks duplicate therapy $\to$ assigns documented severity $\to$ displays alert.
+- **Doctor / Pharmacist:** Reviews the alert and either acknowledges it or overrides it with a justification.
+- **Audit:** Action, user, alert, decision, reason and timestamp are recorded.
+- **Optional RAG:** Retrieves supporting evidence and presents a plain-language explanation with source references.
+
+# 14. Evaluation Plan
+
+| Area | Metrics / Evaluation |
+|---|---|
+| **Safety Engine** | Precision, recall, F1-score, false-positive rate and rule coverage on a controlled test set. |
+| **NLP** | Medicine extraction, dosage extraction, frequency extraction and medication normalization accuracy. |
+| **RAG** | Retrieval relevance, evidence grounding, response correctness and hallucination rate where implemented. |
+| **System** | API latency, prescription-processing time, database performance and controlled concurrent requests. |
+| **Alert Design** | Compare binary versus severity-based prioritization using controlled test scenarios; do not claim clinical effectiveness without appropriate validation. |
+
+# 15. Important Project Rules (B.Tech CSE Major Project)
+
+- **• Rules detect.** The deterministic safety engine is the source of truth for safety detection.
+- **• NLP structures.** NLP extracts information; it does not decide clinical safety.
+- **• RAG explains.** The LLM explains retrieved evidence; it does not prescribe or independently determine safety.
+- **• Doctor decides.** Final clinical authority remains with the healthcare professional.
+- **• No fabricated medical information.** Every safety rule and evidence source must be traceable.
+- **• Verify data terms.** Check current source version, license, attribution and allowed use before ingestion.
+- **• MVP first.** Never delay the working safety engine for advanced AI features.
+
+# 16. Source Basis
 
 The supplied problem notes identify pharmacist ward-round, medication-reconciliation and drug-information roles and propose an agentic pharmacist because of limited pharmacist capacity. The supplied API notes identify the PPB registered-product page plus openFDA and RxCheck as possible data/information sources. The PPB page was independently verified as a public registered-products table with 324 pages.

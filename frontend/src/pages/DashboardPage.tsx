@@ -26,6 +26,9 @@ import {
   Database,
   Key,
   CheckCircle2,
+  Award,
+  ListChecks,
+  Scale,
 } from "lucide-react";
 
 export interface DashboardPageProps {
@@ -479,6 +482,243 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-mono">
             <span>Audit Trail: Immutable Request IDs</span>
             <span className="text-teal-700 font-semibold">100% Traceable</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Major Modules Table & MVP Definition */}
+      <section className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-4" aria-label="Major Modules and MVP Definition">
+        {/* Major Modules Table */}
+        <div className="lg:col-span-2 bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2 text-teal-800 font-bold text-xs uppercase tracking-wider">
+              <Database size={16} />
+              <span>Major Modules</span>
+            </div>
+            <span className="text-[11px] font-semibold text-slate-500">Core Subsystems</span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase text-[10px]">
+                  <th className="py-2 pr-3">Module</th>
+                  <th className="py-2">What it does</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                <tr>
+                  <td className="py-2 pr-3 font-bold text-slate-900 whitespace-nowrap">Authentication & RBAC</td>
+                  <td className="py-2">Login and role-based permissions for doctor, pharmacist and admin.</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-3 font-bold text-slate-900 whitespace-nowrap">Patient Management</td>
+                  <td className="py-2">Conditions, allergies, medication history and profile information.</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-3 font-bold text-slate-900 whitespace-nowrap">Prescription Management</td>
+                  <td className="py-2">Structured prescription entry and free-text input.</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-3 font-bold text-slate-900 whitespace-nowrap">Medication Normalization</td>
+                  <td className="py-2">Maps medication input to standardized representations where applicable.</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-3 font-bold text-slate-900 whitespace-nowrap">Safety Engine</td>
+                  <td className="py-2">Drug-drug, drug-disease, allergy and duplicate-therapy checks.</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-3 font-bold text-slate-900 whitespace-nowrap">NLP</td>
+                  <td className="py-2">Extracts medication information from typed prescription text.</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-3 font-bold text-slate-900 whitespace-nowrap">RAG</td>
+                  <td className="py-2">Retrieves supporting evidence and generates explanations.</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-3 font-bold text-slate-900 whitespace-nowrap">Alert & Review</td>
+                  <td className="py-2">Displays severity, evidence, acknowledgement and override workflow.</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-3 font-bold text-slate-900 whitespace-nowrap">Audit</td>
+                  <td className="py-2">Records important actions, decisions, justifications and timestamps.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* MVP Definition Checklist */}
+        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div className="flex items-center gap-2 text-indigo-700 font-bold text-xs uppercase tracking-wider mb-2">
+              <ListChecks size={16} />
+              <span>MVP Definition</span>
+            </div>
+            <h4 className="text-sm font-bold text-slate-900 mb-2">
+              Complete & Reliable Baseline
+            </h4>
+            <div className="space-y-1.5 text-xs text-slate-600 font-medium">
+              {[
+                "Login (Role-Based Access)",
+                "Patient profile: conditions + allergies + current medicines",
+                "Prescription entry (Structured or Typed)",
+                "Medication normalization to verified catalogue",
+                "Deterministic safety engine (Fixed order)",
+                "Risk detection + severity alert",
+                "Doctor acknowledgement or override",
+                "Audit log (Action, reason, timestamp)",
+              ].map((step, idx) => (
+                <div key={idx} className="flex items-center gap-2 p-1.5 bg-slate-50 rounded border border-slate-100">
+                  <CheckCircle2 size={13} className="text-teal-600 shrink-0" />
+                  <span>{step}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-3 p-2 bg-teal-50 border border-teal-200 rounded text-[11px] text-teal-900">
+            <strong>Standard:</strong> If this workflow is complete, tested, and reliable, the project has a valid MVP. NLP and RAG are advanced layers added afterward.
+          </div>
+        </div>
+      </section>
+
+      {/* 13. Example End-to-End Scenario & 14. Evaluation Plan */}
+      <section className="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-4" aria-label="End-to-End Scenario and Evaluation Plan">
+        {/* Scenario 13 Benchmark Card */}
+        <div className="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-xl p-5 border border-slate-800 shadow-sm flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2 text-amber-300 font-bold text-xs uppercase tracking-wider">
+                <Award size={16} />
+                <span>13. Example End-to-End Scenario</span>
+              </div>
+              <span className="px-2 py-0.5 rounded text-[10px] bg-amber-400/20 text-amber-200 font-mono">
+                Patient #13 Benchmark
+              </span>
+            </div>
+
+            <h4 className="text-sm font-bold text-slate-100 mb-2">
+              David Kimani: 60yo • Chronic Kidney Disease • Penicillin Allergy
+            </h4>
+
+            <div className="space-y-2 text-xs text-slate-300 leading-relaxed mb-4">
+              <div className="p-2.5 bg-slate-800/80 rounded border border-slate-700">
+                <span className="text-slate-400 block font-semibold text-[11px] uppercase">Baseline Dossier:</span>
+                Current medicines: <strong>Drug A (lisinopril 10mg)</strong> + <strong>Drug B (metformin 500mg)</strong>.
+              </div>
+
+              <div className="p-2.5 bg-slate-800/80 rounded border border-slate-700">
+                <span className="text-amber-300 block font-semibold text-[11px] uppercase">New Prescription Under Review:</span>
+                <strong>Drug C (amoxicillin 500mg)</strong> or <strong>ibuprofen 400mg</strong> twice daily.
+              </div>
+
+              <div className="p-2.5 bg-slate-800/80 rounded border border-slate-700 space-y-1">
+                <span className="text-teal-300 block font-semibold text-[11px] uppercase">Deterministic Surveillance:</span>
+                <div>1. Normalizes Drug C $\to$ checks current medicines (DDI)</div>
+                <div>2. Checks disease-related conflicts $\to$ flags renal contraindication</div>
+                <div>3. Checks allergy conflicts $\to$ flags cross-reactivity with penicillin</div>
+                <div>4. Checks duplicate therapy $\to$ assigns documented severity $\to$ displays alert</div>
+                <div>5. Doctor reviews alert $\to$ acknowledges or overrides with clinical justification</div>
+                <div>6. Audit log records action, user, alert, decision, reason and timestamp</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+            <span className="text-[11px] text-slate-400">Ready to test in 1 click:</span>
+            <button
+              type="button"
+              className="btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold"
+              onClick={() => handleLaunchPatient(13)}
+            >
+              <span>Run Scenario 13 Benchmark</span>
+              <ArrowRight size={13} />
+            </button>
+          </div>
+        </div>
+
+        {/* 14. Evaluation Plan Matrix */}
+        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div className="flex items-center gap-2 text-teal-800 font-bold text-xs uppercase tracking-wider mb-2">
+              <Scale size={16} />
+              <span>14. Evaluation Plan</span>
+            </div>
+            <h4 className="text-sm font-bold text-slate-900 mb-2">
+              Target Metrics & Clinical Evaluation Framework
+            </h4>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead>
+                  <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase text-[10px]">
+                    <th className="py-1.5 pr-2">Area</th>
+                    <th className="py-1.5">Metrics / Evaluation Criteria</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-600">
+                  <tr>
+                    <td className="py-2 pr-2 font-bold text-slate-800">Safety Engine</td>
+                    <td className="py-2">Precision, recall, F1-score, false-positive rate and rule coverage on controlled test sets.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 pr-2 font-bold text-slate-800">NLP</td>
+                    <td className="py-2">Medicine extraction, dosage extraction, frequency extraction and medication normalization accuracy.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 pr-2 font-bold text-slate-800">RAG</td>
+                    <td className="py-2">Retrieval relevance, evidence grounding, response correctness and hallucination rate where implemented.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 pr-2 font-bold text-slate-800">System</td>
+                    <td className="py-2">API latency, prescription-processing time, database performance and controlled concurrent requests.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 pr-2 font-bold text-slate-800">Alert Design</td>
+                    <td className="py-2">Compare binary versus severity-based prioritization using controlled test scenarios.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div className="mt-3 p-2 bg-slate-50 border border-slate-200 rounded text-[11px] text-slate-500 italic">
+            * Alert design evaluation avoids unvalidated clinical efficacy claims; strictly tests decision support accuracy.
+          </div>
+        </div>
+      </section>
+
+      {/* 15. Important Project Rules Banner (B.Tech CSE Major Project) */}
+      <section className="mb-6 bg-amber-50/90 rounded-xl p-5 border border-amber-300 shadow-sm" aria-label="Important Project Rules">
+        <div className="flex items-center gap-2 text-amber-900 font-bold text-xs uppercase tracking-wider mb-2.5">
+          <ShieldCheck size={17} className="text-amber-700" />
+          <span>15. Important Project Rules — MedSafe AI (B.Tech CSE Major Project)</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          <div className="p-3 bg-white rounded-lg border border-amber-200">
+            <span className="font-bold text-amber-950 block mb-1">• Rules detect</span>
+            <p className="text-slate-600">The deterministic safety engine is the sole source of truth for safety detection.</p>
+          </div>
+          <div className="p-3 bg-white rounded-lg border border-amber-200">
+            <span className="font-bold text-amber-950 block mb-1">• NLP structures</span>
+            <p className="text-slate-600">NLP extracts information from clinical notes; it does not decide clinical safety.</p>
+          </div>
+          <div className="p-3 bg-white rounded-lg border border-amber-200">
+            <span className="font-bold text-amber-950 block mb-1">• RAG explains</span>
+            <p className="text-slate-600">The LLM explains retrieved evidence; it does not prescribe or independently determine safety.</p>
+          </div>
+          <div className="p-3 bg-white rounded-lg border border-amber-200">
+            <span className="font-bold text-amber-950 block mb-1">• Doctor decides</span>
+            <p className="text-slate-600">Final clinical authority remains with the healthcare professional.</p>
+          </div>
+          <div className="p-3 bg-white rounded-lg border border-amber-200">
+            <span className="font-bold text-amber-950 block mb-1">• No fabricated info</span>
+            <p className="text-slate-600">Every safety rule and evidence source must be verifiable and traceable.</p>
+          </div>
+          <div className="p-3 bg-white rounded-lg border border-amber-200">
+            <span className="font-bold text-amber-950 block mb-1">• Verify data terms</span>
+            <p className="text-slate-600">Check current source version, license, attribution and allowed use before ingestion.</p>
+          </div>
+          <div className="p-3 bg-white rounded-lg border border-amber-200 col-span-1 md:col-span-2">
+            <span className="font-bold text-amber-950 block mb-1">• MVP first</span>
+            <p className="text-slate-600">Never delay the working deterministic safety engine for advanced AI features. Core safety logic precedes advanced models.</p>
           </div>
         </div>
       </section>
