@@ -3,7 +3,8 @@ import type { PatientContext } from "../types/patient";
 import type { PageId } from "../components/AppShell";
 import { SafetyReviewPanel } from "../components/SafetyReviewPanel";
 import { DrugSearch } from "../components/DrugSearch";
-import { Pill, Plus, X, ShieldAlert, Sparkles, RotateCcw, AlertTriangle } from "lucide-react";
+import { PrescriptionNLPParser } from "../components/PrescriptionNLPParser";
+import { Pill, Plus, X, ShieldAlert, Sparkles, RotateCcw, AlertTriangle, FileText } from "lucide-react";
 
 export interface SafetyReviewPageProps {
   /** Active patient clinical context. */
@@ -34,6 +35,7 @@ export const SafetyReviewPage: React.FC<SafetyReviewPageProps> = ({
   onFindAlternatives,
 }) => {
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
+  const [showNLPParser, setShowNLPParser] = useState<boolean>(false);
 
   const handleRemoveMed = (medToRemove: string) => {
     onUpdateMedications(medications.filter((m) => m.toLowerCase() !== medToRemove.toLowerCase()));
@@ -46,6 +48,18 @@ export const SafetyReviewPage: React.FC<SafetyReviewPageProps> = ({
       onUpdateMedications([...medications, trimmed]);
     }
     setShowAddForm(false);
+  };
+
+  const handleNLPAddMeds = (newMeds: string[]) => {
+    const updated = [...medications];
+    for (const m of newMeds) {
+      const lower = m.trim().toLowerCase();
+      if (!updated.some((existing) => existing.toLowerCase() === lower)) {
+        updated.push(lower);
+      }
+    }
+    onUpdateMedications(updated);
+    setShowNLPParser(false);
   };
 
   const handleResetToPatientMeds = () => {
@@ -93,7 +107,7 @@ export const SafetyReviewPage: React.FC<SafetyReviewPageProps> = ({
 
       {/* Regimen Medicines Management Card */}
       <section className="regimen-selector-card mt-4" aria-label="Medication Regimen Under Evaluation">
-        <div className="regimen-header-line flex items-center justify-between">
+        <div className="regimen-header-line flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2">
             <Pill size={18} className="text-teal-600" aria-hidden="true" />
             <h3 className="font-semibold text-slate-800 text-sm">
@@ -101,15 +115,42 @@ export const SafetyReviewPage: React.FC<SafetyReviewPageProps> = ({
             </h3>
           </div>
 
-          <button
-            type="button"
-            className="action-btn-sm"
-            onClick={() => setShowAddForm(!showAddForm)}
-          >
-            <Plus size={14} aria-hidden="true" />
-            <span>{showAddForm ? "Close Search" : "Add Medication from Catalogue"}</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="action-btn-sm bg-teal-50 text-teal-800 border-teal-200 hover:bg-teal-100"
+              onClick={() => {
+                setShowNLPParser(!showNLPParser);
+                if (showAddForm) setShowAddForm(false);
+              }}
+            >
+              <FileText size={14} aria-hidden="true" />
+              <span>{showNLPParser ? "Close NLP Parser" : "Parse Free-Text Prescription (NLP)"}</span>
+            </button>
+
+            <button
+              type="button"
+              className="action-btn-sm"
+              onClick={() => {
+                setShowAddForm(!showAddForm);
+                if (showNLPParser) setShowNLPParser(false);
+              }}
+            >
+              <Plus size={14} aria-hidden="true" />
+              <span>{showAddForm ? "Close Search" : "Add from Catalogue"}</span>
+            </button>
+          </div>
         </div>
+
+        {/* Biomedical NLP Free-Text Prescription Parser Panel */}
+        {showNLPParser && (
+          <div className="mt-3">
+            <PrescriptionNLPParser
+              onAddMedications={handleNLPAddMeds}
+              onClose={() => setShowNLPParser(false)}
+            />
+          </div>
+        )}
 
         {/* Autocomplete Drug Search for Adding Medicines */}
         {showAddForm && (

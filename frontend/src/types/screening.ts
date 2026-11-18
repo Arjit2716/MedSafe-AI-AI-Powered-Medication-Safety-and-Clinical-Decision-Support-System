@@ -54,9 +54,42 @@ export interface ScreeningRequest {
   /** Internal patient identifier. */
   patientId: number;
   /** Drug names or catalogue IDs to screen. */
-  medications: string[];
+  medications?: string[];
+  /** Optional free-text prescription note parsed via Biomedical NLP. */
+  prescriptionText?: string;
   /** Whether to attach external evidence per finding. */
   includeEvidence?: boolean;
+}
+
+/**
+ * Structured clinical entity extracted from free-text prescription via Biomedical NLP.
+ */
+export interface ParsedPrescriptionItem {
+  rawText: string;
+  medication: string;
+  dosage: string | null;
+  frequency: string | null;
+  route: string | null;
+  duration: string | null;
+  canonicalName: string | null;
+  isResolved: boolean;
+  catalogueId: number | null;
+}
+
+/**
+ * Request payload for Biomedical NLP prescription parsing.
+ */
+export interface PrescriptionParseRequest {
+  prescriptionText: string;
+}
+
+/**
+ * Response payload from Biomedical NLP prescription parsing.
+ */
+export interface PrescriptionParseResponse {
+  parsedItems: ParsedPrescriptionItem[];
+  extractedMedications: string[];
+  totalDetected: number;
 }
 
 /**

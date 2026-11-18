@@ -9,18 +9,61 @@ Public outputs: `ScreeningRequest`, `ScreeningResponse`, `SafetyFinding`,
 from pydantic import BaseModel, Field
 
 
+class ParsedPrescriptionItem(BaseModel):
+    """Structured clinical entity extracted from free-text prescription.
+
+    Attributes:
+        raw_text: Original raw line or segment from the prescription.
+        medication: Extracted drug name as written or detected.
+        dosage: Extracted strength or dose quantity (e.g. '500 mg').
+        frequency: Normalized clinical frequency / sig (e.g. 'three times daily').
+        route: Administration route (e.g. 'oral').
+        duration: Duration of course if specified (e.g. '7 days').
+        canonical_name: Normalized catalogue drug name if resolved.
+        is_resolved: Whether the medication maps to a known catalogue entry.
+        catalogue_id: Primary key in the medication catalogue if resolved.
+    """
+
+    raw_text: str
+    medication: str
+    dosage: str | None = None
+    frequency: str | None = None
+    route: str | None = None
+    duration: str | None = None
+    canonical_name: str | None = None
+    is_resolved: bool = False
+    catalogue_id: int | None = None
+
+
+class PrescriptionParseRequest(BaseModel):
+    """Request payload for biomedical NLP prescription extraction."""
+
+    prescription_text: str
+
+
+class PrescriptionParseResponse(BaseModel):
+    """Response payload containing structured entities extracted via NLP."""
+
+    parsed_items: list[ParsedPrescriptionItem]
+    extracted_medications: list[str]
+    total_detected: int
+
+
 class ScreeningRequest(BaseModel):
     """Request body for POST /api/v1/screenings/interaction.
 
     Attributes:
         patient_id: Internal patient identifier.
         medications: Drug names or catalogue IDs to screen.
+        prescription_text: Optional free-text doctor prescription note
+            parsed via biomedical NLP prior to screening.
         include_evidence: Whether to attach external evidence per
             finding. Defaults to False to keep the common case fast.
     """
 
     patient_id: int
-    medications: list[str]
+    medications: list[str] = Field(default_factory=list)
+    prescription_text: str | None = None
     include_evidence: bool = False
 
 

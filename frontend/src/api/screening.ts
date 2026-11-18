@@ -1,5 +1,6 @@
 import { apiFetch } from "./client";
 import type {
+  PrescriptionParseResponse,
   Recommendation,
   RecommendationRequest,
   ScreeningRequest,
@@ -16,6 +17,21 @@ export async function screenMedications(req: ScreeningRequest): Promise<Screenin
   return apiFetch<ScreeningResponse>("/api/v1/screenings/interaction", {
     method: "POST",
     body: JSON.stringify(req),
+  });
+}
+
+/**
+ * Parses free-text doctor prescription note using Biomedical NLP.
+ *
+ * @param prescriptionText - Raw unformatted prescription text or physician clinical note.
+ * @returns Structured entities and detected canonical medication list.
+ */
+export async function parsePrescription(
+  prescriptionText: string
+): Promise<PrescriptionParseResponse> {
+  return apiFetch<PrescriptionParseResponse>("/api/v1/screenings/parse-prescription", {
+    method: "POST",
+    body: JSON.stringify({ prescriptionText }),
   });
 }
 

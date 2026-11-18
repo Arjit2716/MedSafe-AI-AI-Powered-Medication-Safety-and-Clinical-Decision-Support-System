@@ -21,17 +21,42 @@ from app.agents.orchestrator import AgentOrchestrator
 from app.core.exceptions import DrugResolutionError, PatientNotFoundError
 from app.db.session import get_db
 from app.schemas.screening import (
+    ParsedPrescriptionItem,
+    PrescriptionParseRequest,
+    PrescriptionParseResponse,
     Recommendation,
     RecommendationRequest,
     ScreeningRequest,
     ScreeningResponse,
 )
-from app.services import drug_catalog_service, recommendation_service
+from app.services import (
+    drug_catalog_service,
+    prescription_nlp_service,
+    recommendation_service,
+)
 
 router = APIRouter()
 
 # Single orchestrator instance (thread-safe: no mutable state per call).
 _orchestrator = AgentOrchestrator()
+
+
+@router.post(
+    "/screenings/parse-prescription",
+    response_model=PrescriptionParseResponse,
+    summary="Parse free-text prescription with Biomedical NLP",
+    description=(
+        "Extracts structured clinical entities (drug name, dosage, frequency, "
+        "route, duration) from unstructured doctor's clinical notes or free-text "
+        "prescription orders, normalizing them against the medication catalogue."
+    ),
+)
+def parse_prescription(
+    payload: PrescriptionParseRequest,
+    db: Session = Depends(get_db),
+) -> PrescriptionParseResponse:
+    """Parse unstructured prescription text into structured clinical entities."""
+    return prescription_nlp_service.parse_prescription_text(payload.prescription_text, db)
 
 
 @router.post(
@@ -41,7 +66,8 @@ _orchestrator = AgentOrchestrator()
     description=(
         "Runs all deterministic safety checks (DDI, allergy, pregnancy, condition "
         "contraindications, age-based caution, duplicate therapy) against the patient's "
-        "clinical context and returns structured findings."
+        "clinical context and returns structured findings. Accepts explicit medication "
+        "lists or free-text prescriptions parsed via Biomedical NLP."
     ),
 )
 def run_screening(
@@ -53,7 +79,8 @@ def run_screening(
 
     Args:
         payload: :class:`~app.schemas.screening.ScreeningRequest` with
-            patient_id, medications list and include_evidence flag.
+            patient_id, medications list, optional free-text prescription,
+            and include_evidence flag.
         request: FastAPI request object used to extract the request ID
             injected by middleware.
         db: Injected database session.
@@ -64,17 +91,29 @@ def run_screening(
 
     Raises:
         HTTPException: 404 if the patient does not exist.
-        HTTPException: 422 if the medication list is empty.
+        HTTPException: 422 if no medications can be resolved or provided.
     """
-    if not payload.medications:
-        raise HTTPException(status_code=422, detail="At least one medication must be provided.")
+    medications_to_screen = list(payload.medications)
+
+    # If free-text prescription note was provided, parse it via Biomedical NLP
+    if payload.prescription_text and payload.prescription_text.strip():
+        nlp_res = prescription_nlp_service.parse_prescription_text(payload.prescription_text, db)
+        for med in nlp_res.extracted_medications:
+            if med.lower() not in [m.lower() for m in medications_to_screen]:
+                medications_to_screen.append(med)
+
+    if not medications_to_screen:
+        raise HTTPException(
+            status_code=422,
+            detail="At least one medication or a parsable prescription text must be provided.",
+        )
 
     request_id = request.headers.get("X-Request-ID", "unknown")
 
     try:
         return _orchestrator.run_medication_review(
             patient_id=payload.patient_id,
-            medication_names=payload.medications,
+            medication_names=medications_to_screen,
             include_evidence=payload.include_evidence,
             db=db,
             request_id=request_id,
