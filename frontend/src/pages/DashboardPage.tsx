@@ -416,6 +416,73 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         </div>
       </section>
 
+      {/* Core Workflow (11 Steps) & Technical Architecture Cards */}
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6" aria-label="Workflow and Technical Architecture">
+        {/* Core Workflow */}
+        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div className="flex items-center gap-2 text-teal-700 font-bold text-xs uppercase tracking-wider mb-2">
+              <CheckCircle2 size={16} />
+              <span>Core Clinical Workflow (11 Steps)</span>
+            </div>
+            <h3 className="text-base font-bold text-slate-900 mb-2">
+              End-to-End Decision Support Lifecycle
+            </h3>
+            <ol className="text-xs text-slate-600 space-y-1.5 list-decimal list-inside font-medium leading-relaxed">
+              <li>Doctor / Pharmacist logs in (Role-based access).</li>
+              <li>Select patient: conditions, allergies, organ function & current medicines.</li>
+              <li>Enter structured prescription OR typed free-text prescription.</li>
+              <li>NLP extracts medication details when free text is used.</li>
+              <li>Normalize medication names / identifiers against catalogue.</li>
+              <li>Run deterministic medication-safety checks.</li>
+              <li>Check interactions, contraindications, allergies and duplicate therapy.</li>
+              <li>Classify severity and generate explainable alert.</li>
+              <li>Optional: retrieve evidence and generate RAG explanation.</li>
+              <li>Healthcare professional reviews, acknowledges or overrides.</li>
+              <li>Record action, clinical justification and timestamp in audit log.</li>
+            </ol>
+          </div>
+        </div>
+
+        {/* Technical Architecture System Flow */}
+        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div className="flex items-center gap-2 text-indigo-700 font-bold text-xs uppercase tracking-wider mb-2">
+              <Cpu size={16} />
+              <span>Technical Architecture & Data Pipeline</span>
+            </div>
+            <h3 className="text-base font-bold text-slate-900 mb-2">
+              System Flow & Pipeline Stack
+            </h3>
+            <div className="p-3 bg-slate-900 text-teal-300 rounded-lg font-mono text-[11px] leading-relaxed mb-3 border border-slate-800">
+              React Dashboard → FastAPI REST API → Patient/Prescription/Auth services → Database → Safety Engine / NLP / RAG → Alert Review → Audit Log
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-xs text-slate-600">
+              <div className="p-2 bg-slate-50 rounded border border-slate-200">
+                <span className="font-bold text-slate-800 block">Frontend Stack</span>
+                Doctor / Pharmacist React + TypeScript Dashboard
+              </div>
+              <div className="p-2 bg-slate-50 rounded border border-slate-200">
+                <span className="font-bold text-slate-800 block">API & Services</span>
+                FastAPI REST API + Auth & Normalization
+              </div>
+              <div className="p-2 bg-slate-50 rounded border border-slate-200">
+                <span className="font-bold text-slate-800 block">Safety & NLP</span>
+                Deterministic Safety Engine + Clinical NLP
+              </div>
+              <div className="p-2 bg-slate-50 rounded border border-slate-200">
+                <span className="font-bold text-slate-800 block">Review & Audit</span>
+                Acknowledge / Override + Audit Trail DB
+              </div>
+            </div>
+          </div>
+          <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Audit Trail: Immutable Request IDs</span>
+            <span className="text-teal-700 font-semibold">100% Traceable</span>
+          </div>
+        </div>
+      </section>
+
       {/* Safety Categories Grid: 12 Distinct Rule Finding Types */}
       <section className="dashboard-categories-section">
         <div className="section-header-row">

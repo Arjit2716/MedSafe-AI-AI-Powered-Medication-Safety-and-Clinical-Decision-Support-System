@@ -143,3 +143,30 @@ export interface ScreeningResponse {
   /** Injected or extracted request ID for audit traceability. */
   requestId?: string;
 }
+
+/**
+ * Request payload for clinician alert acknowledgment or override.
+ */
+export interface AlertOverrideRequest {
+  requestId?: string;
+  patientId: number;
+  ruleId: string;
+  clinicianName: string;
+  clinicianRole: "DOCTOR" | "PHARMACIST" | "ADMIN";
+  action: "ACKNOWLEDGED" | "OVERRIDDEN";
+  justification: string;
+}
+
+/**
+ * Confirmation payload of recorded alert override in audit log.
+ */
+export interface AlertOverrideResponse {
+  success: boolean;
+  overrideId: number;
+  recordedAt: string;
+  clinicianName: string;
+  clinicianRole: string;
+  action: string;
+  ruleId: string;
+  justification: string;
+}

@@ -1,5 +1,7 @@
 import { apiFetch } from "./client";
 import type {
+  AlertOverrideRequest,
+  AlertOverrideResponse,
   PrescriptionParseResponse,
   Recommendation,
   RecommendationRequest,
@@ -45,6 +47,21 @@ export async function fetchRecommendations(
   req: RecommendationRequest
 ): Promise<Recommendation[]> {
   return apiFetch<Recommendation[]>("/api/v1/recommendations", {
+    method: "POST",
+    body: JSON.stringify(req),
+  });
+}
+
+/**
+ * Records a clinician alert acknowledgment or override in the audit log.
+ *
+ * @param req - Contains `patientId`, `ruleId`, `clinicianName`, `clinicianRole`, `action`, and `justification`.
+ * @returns Confirmation record from the audit log with unique override ID and timestamp.
+ */
+export async function recordAlertOverride(
+  req: AlertOverrideRequest
+): Promise<AlertOverrideResponse> {
+  return apiFetch<AlertOverrideResponse>("/api/v1/screenings/override", {
     method: "POST",
     body: JSON.stringify(req),
   });

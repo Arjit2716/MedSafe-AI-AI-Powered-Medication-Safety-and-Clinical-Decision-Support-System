@@ -377,3 +377,31 @@ class ScreeningAudit(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), nullable=False)
     ruleset_version: Mapped[str] = mapped_column(String(20), nullable=False)
     result_json: Mapped[str] = mapped_column(Text, nullable=False)
+
+
+class AlertOverrideAudit(Base):
+    """Audit log entry for a clinician alert acknowledgment or override.
+
+    Attributes:
+        id: Surrogate integer primary key.
+        request_id: Request identifier associated with the screening.
+        patient_id: Identifier of the patient.
+        rule_id: Unique identifier of the finding/rule acknowledged or overridden.
+        clinician_name: Name of the doctor or pharmacist.
+        clinician_role: Role (e.g. DOCTOR, PHARMACIST, ADMIN).
+        action: ACKNOWLEDGED or OVERRIDDEN.
+        justification: Clinical reason/notes for overriding or acknowledging.
+        timestamp: ISO timestamp of clinician action.
+    """
+
+    __tablename__ = "alert_override_audit"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    request_id: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
+    patient_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
+    rule_id: Mapped[str] = mapped_column(String(50), nullable=False)
+    clinician_name: Mapped[str] = mapped_column(String(200), nullable=False)
+    clinician_role: Mapped[str] = mapped_column(String(50), nullable=False)
+    action: Mapped[str] = mapped_column(String(30), nullable=False)
+    justification: Mapped[str] = mapped_column(Text, nullable=False)
+    timestamp: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), nullable=False)

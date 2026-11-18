@@ -89,8 +89,40 @@ export const SafetyReviewPanel: React.FC<SafetyReviewPanelProps> = ({
 
   const isIncompleteContext = result?.status === "INCOMPLETE_CONTEXT";
 
+  const [activeClinician, setActiveClinician] = useState<{
+    name: string;
+    role: "DOCTOR" | "PHARMACIST" | "ADMIN";
+  }>({
+    name: "Pharm. Alex Mwangi, RPh",
+    role: "PHARMACIST",
+  });
+
   return (
     <div className="safety-review-panel" aria-label="Medication Safety Review Engine">
+      {/* Clinician Reviewer Profile & Role Selection Bar */}
+      <div className="flex items-center justify-between p-2.5 px-4 bg-slate-100/80 border-b border-slate-200 text-xs rounded-t-lg">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold text-slate-700">Reviewing Clinician:</span>
+          <select
+            className="p-1 px-2 rounded border border-slate-300 bg-white font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            value={activeClinician.role}
+            onChange={(e) => {
+              if (e.target.value === "DOCTOR") {
+                setActiveClinician({ name: "Dr. Sarah Kimani, MD", role: "DOCTOR" });
+              } else {
+                setActiveClinician({ name: "Pharm. Alex Mwangi, RPh", role: "PHARMACIST" });
+              }
+            }}
+          >
+            <option value="PHARMACIST">Pharm. Alex Mwangi, RPh (Clinical Pharmacist)</option>
+            <option value="DOCTOR">Dr. Sarah Kimani, MD (Attending Physician)</option>
+          </select>
+        </div>
+        <span className="text-slate-500 font-mono text-[11px]">
+          Role: {activeClinician.role} • Audit Log Active
+        </span>
+      </div>
+
       {/* Top action control bar */}
       <div className="review-action-bar">
         <div className="action-bar-left">
@@ -237,6 +269,9 @@ export const SafetyReviewPanel: React.FC<SafetyReviewPanelProps> = ({
                     finding={finding}
                     expanded={finding.severity === "CONTRAINDICATED" || finding.severity === "HIGH"}
                     onFindAlternatives={onFindAlternatives}
+                    patientId={patientId}
+                    clinicianName={activeClinician.name}
+                    clinicianRole={activeClinician.role}
                   />
                 ))}
               </div>

@@ -117,7 +117,44 @@ The deterministic layer remains the source of truth. The LLM summarizes structur
 
 ---
 
-## 3. MVP Scope
+## 3. Core Workflow
+
+1. **Doctor / Pharmacist logs in:** Authenticates and accesses role-tailored clinical interface.
+2. **Select patient:** Loads demographics, active conditions, allergies, organ functions, and current medicines.
+3. **Enter prescription:** Enter structured prescription OR typed free-text clinical orders.
+4. **Biomedical NLP extraction:** When free text is used, the NLP pipeline extracts drug name, dosage, frequency, route, and duration.
+5. **Medication normalization:** Normalizes drug names and brand identifiers against canonical catalogue entries.
+6. **Deterministic safety checks:** Executes pure deterministic rules against patient-specific clinical context.
+7. **Comprehensive multi-dimensional checks:** Checks drug-drug interactions, condition contraindications, allergy cross-reactivities, and duplicate therapies.
+8. **Severity classification:** Classifies severity (`INFO` to `CONTRAINDICATED`) and produces traceable findings with clinical mechanisms and rule IDs.
+9. **Evidence retrieval & RAG:** Optionally retrieves real-time openFDA drug-labeling excerpts and generates structured plain-language synthesis.
+10. **Clinician review & override:** Healthcare professional reviews findings, and acknowledges or overrides alerts with mandatory clinical justifications.
+11. **Immutable audit logging:** Records action, justification, ruleset version, catalogue version, and timestamp in the audit database.
+
+---
+
+## 4. Technical Architecture
+
+### System Flow
+
+```text
+React Dashboard → FastAPI REST API → Patient/Prescription/Auth Services → Database → Safety Engine / NLP / RAG → Alert Review → Audit Log
+```
+
+### Component Stack
+
+- **Doctor / Pharmacist Dashboard:** React + TypeScript, Vite, Tailwind CSS, Lucide icons, responsive Clinical Decision Support interface.
+- **REST API Layer:** FastAPI (Python 3.12+), Pydantic v2 schemas, CORS middleware, request ID tracing.
+- **Services Layer:** Patient context service, Drug catalogue normalization service, Prescription Biomedical NLP service, Recommendation service.
+- **Deterministic Safety Engine:** Pure rule modules (DDI, allergy cross-reactivity, pregnancy, renal, hepatic, hyperkalemia, G6PD, asthma/respiratory, Beers criteria age caution, duplicate therapy).
+- **Biomedical NLP Pipeline:** Sigs/Latin abbreviation expansions, dose/route/duration entity recognition, fuzzy-to-canonical catalogue normalization.
+- **Evidence Retrieval & RAG:** Live openFDA drug-labeling API integration + PharmacistAgent explanation synthesis.
+- **Review & Override Layer:** Clinician alert acknowledgment & override modal with mandatory clinical justifications.
+- **Database & Audit Trail:** SQLAlchemy ORM (PostgreSQL / SQLite) storing full patient cohorts, rulesets, screening audits, and clinician override logs.
+
+---
+
+## 5. MVP Scope
 
 The MVP treats medication safety as a **multi-dimensional patient-context problem**, not merely a pregnancy checker.
 

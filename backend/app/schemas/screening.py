@@ -165,3 +165,28 @@ class Recommendation(BaseModel):
     included_reason: str | None = None
     excluded_reason: str | None = None
     availability: str | None = None
+
+
+class AlertOverrideRequest(BaseModel):
+    """Payload for clinician alert acknowledgment or override."""
+
+    request_id: str = "demo-req"
+    patient_id: int
+    rule_id: str
+    clinician_name: str
+    clinician_role: str = "PHARMACIST"  # DOCTOR | PHARMACIST | ADMIN
+    action: str = "OVERRIDDEN"  # ACKNOWLEDGED | OVERRIDDEN
+    justification: str
+
+
+class AlertOverrideResponse(BaseModel):
+    """Confirmation payload of recorded alert override in audit log."""
+
+    success: bool
+    override_id: int
+    recorded_at: str
+    clinician_name: str
+    clinician_role: str
+    action: str
+    rule_id: str
+    justification: str

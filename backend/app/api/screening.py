@@ -19,8 +19,12 @@ from sqlalchemy.orm import Session
 
 from app.agents.orchestrator import AgentOrchestrator
 from app.core.exceptions import DrugResolutionError, PatientNotFoundError
+from app.db.models import AlertOverrideAudit
+from app.db.repositories import save_alert_override
 from app.db.session import get_db
 from app.schemas.screening import (
+    AlertOverrideRequest,
+    AlertOverrideResponse,
     ParsedPrescriptionItem,
     PrescriptionParseRequest,
     PrescriptionParseResponse,
@@ -168,4 +172,44 @@ def get_recommendations(
         target_medication=target_med,
         indication=payload.indication,
         db=db,
+    )
+
+
+@router.post(
+    "/screenings/override",
+    response_model=AlertOverrideResponse,
+    summary="Record alert acknowledgment or clinician override",
+    description=(
+        "Records a doctor or pharmacist's formal acknowledgment or override of a "
+        "clinical safety finding, logging mandatory clinical justification, role, "
+        "and immutable timestamp into the audit database."
+    ),
+)
+def record_alert_override(
+    payload: AlertOverrideRequest,
+    db: Session = Depends(get_db),
+) -> AlertOverrideResponse:
+    """Record a clinical override or acknowledgment into the audit trail."""
+    from datetime import datetime, timezone
+
+    audit_entry = AlertOverrideAudit(
+        request_id=payload.request_id,
+        patient_id=payload.patient_id,
+        rule_id=payload.rule_id,
+        clinician_name=payload.clinician_name,
+        clinician_role=payload.clinician_role,
+        action=payload.action,
+        justification=payload.justification,
+    )
+    saved = save_alert_override(db, audit_entry)
+
+    return AlertOverrideResponse(
+        success=True,
+        override_id=saved.id,
+        recorded_at=datetime.now(timezone.utc).isoformat(),
+        clinician_name=saved.clinician_name,
+        clinician_role=saved.clinician_role,
+        action=saved.action,
+        rule_id=saved.rule_id,
+        justification=saved.justification,
     )

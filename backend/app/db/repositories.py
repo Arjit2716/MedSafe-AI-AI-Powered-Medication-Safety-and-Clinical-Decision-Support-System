@@ -19,6 +19,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.db.models import (
+    AlertOverrideAudit,
     Allergy,
     AllergyCrossReactivity,
     Condition,
@@ -402,3 +403,19 @@ def save_screening_audit(db: Session, audit: ScreeningAudit) -> None:
     """
     db.add(audit)
     db.commit()
+
+
+def save_alert_override(db: Session, override: AlertOverrideAudit) -> AlertOverrideAudit:
+    """Persist an alert acknowledgment or override in the audit log.
+
+    Args:
+        db: Active SQLAlchemy session.
+        override: Populated :class:`AlertOverrideAudit` instance.
+
+    Returns:
+        The persisted audit record with its primary key ID assigned.
+    """
+    db.add(override)
+    db.commit()
+    db.refresh(override)
+    return override
